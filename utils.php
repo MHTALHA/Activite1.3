@@ -67,8 +67,16 @@ function getArticles($n=null){
     };
 
 //print_r(getArticles(6));
+
 function deleteArticle($id){
-        
+    global $articles;
+    foreach ($articles as $key => $id) {
+        if (in_array('id', $id)) {
+            unset($articles[$key]);
+        }
+    }
+    $articles = json_encode($articles);
+    file_put_contents('articles.json', $articles);
 }
 
 ?>
