@@ -20,58 +20,65 @@
            </div>
             <div class="col-12 col-md-9">
 
-<?php 
- // Vérifier si le formulaire est soumis 
-//$id=uniqid();
-if (isset($_POST["submit"])){
+
+<?php
+
+array();
+$arr_data[] = array(); // create empty array
+
+$myFile = "articles.json";
+
+if(isset($_POST["submit"])){
 if((isset($_POST["titre"])) && (isset($_POST["auteur"])) && (isset($_POST["date"]) )&& (isset($_POST["date"])) && (isset($_POST["description"]))){
-
     if(!empty($_POST["titre"]) && !empty($_POST["auteur"]) && !empty($_POST["date"])&& !empty($_POST["date"]) && !empty($_POST["description"])){
-/* récupérer les données du formulaire en utilisant 
-        la valeur des attributs name comme clé 
-       */
-      $titre = htmlspecialchars($_POST['titre']); 
-      $auteur = htmlspecialchars($_POST['auteur']); 
-      $date= $_POST['date']; 
-      $description= strip_tags($_POST['description']); 
-      //$id=uniqid();
-      echo $titre."<br/>";
-      echo $auteur."<br/>";
-      echo $date."<br/>";
-      echo $description."<br/>";
-      echo $_REQUEST['id']."<br/>";
-      print_r($_POST);
-      //echo $article=json_encode($_POST);
-      // encode array to json
-      $article=array($_POST);
-     
-      $article_json = json_encode(array('articles' => $article));
-      print_r($article_json);
-     
-    //write json to file
-    if (file_put_contents("articles.json", $article_json))
-        echo "<div class='alert alert-success' role='alert'>
-        JSON file a été créée avec succée...!
-      </div>";
-    else 
-        echo "Oops! Error creating json file...";
-
- } else {
-     echo "<div class='alert alert-danger' role='alert'>
-     Veuillez remplir le formulaire!
-   </div>";
- }
-
+        
     }
+}
 };
-if(!(in_array($_REQUEST['id'], $articles))){
-    global $article_json;
-    array_push($articles,$article_json);
-    //$articles[]=$article_json;
-};
-    
 
-?>
+try
+ {
+   //Get form data
+   $formdata = array(
+    'id'=>$_REQUEST['id'],
+    'titre'=> htmlspecialchars($_POST['titre']), 
+    'auteur' => htmlspecialchars($_POST['auteur']),
+    'date'=> $_POST['date'], 
+    'description'=> strip_tags($_POST['description']) 
+    
+   );
+
+
+  //Get data from existing json file
+   $jsondata = file_get_contents($myFile);
+
+   // converts json data into array
+   $arr_data = json_decode($jsondata, true);
+
+   // Push article data to array
+   array_push($arr_data,$formdata);
+
+   //Convert updated array to JSON
+   $jsondata = json_encode($arr_data, JSON_PRETTY_PRINT);
+
+   //write json data into data.json file
+   if(file_put_contents($myFile, $jsondata)) {
+    echo "<div class='alert alert-success' role='alert'>
+    JSON file a été créée avec succée...!
+  </div>";
+    }
+   else 
+        echo "error";
+
+   }
+
+    catch (Exception $e) {
+        echo 'Caught exception: ',  $e->getMessage(), "\n";
+  }
+
+
+   ?>
+
                 <form  action="" method="POST" >
                 <input type="hidden" name="id" value="<?php echo  $id=uniqid();?>" />
                     <div class="form-group row">
